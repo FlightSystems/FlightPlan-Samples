@@ -14,5 +14,5 @@ Generated documentation (from the flightplan CLI):
 
 | App | What it is |
 | --- | --- |
-| [Inventory Hub](inventory-hub/index.md) | Sample Inventory App |
-| [Shopping App](shopping-app/index.md) | Sample Shopping App |
+| [Inventory Hub](docs/inventory-hub/index.md) | Sample Inventory App |
+| [Shopping App](docs/shopping-app/index.md) | Sample Shopping App |
