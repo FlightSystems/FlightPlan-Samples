@@ -1,0 +1,46 @@
+tooling:
+  github-repos:
+    type: source-control
+    description: GitHub Repos
+    provider: GitHub
+    zone: zone://external
+    organization: XeoHealth
+    url: https://github.com/XeoHealth
+
+  github-actions:
+    type: ci-cd
+    description: GitHub Actions
+    provider: GitHub
+    zone: zone://external
+    organization: XeoHealth
+    url: https://github.com/XeoHealth
+
+  jira:
+    type: work-tracking
+    description: JIRA
+    provider: Atlassian
+    zone: zone://external
+    url: https://xeohealth.jira.atlassian.com
+    
+  teamcity:
+    type: ci-cd
+    description: TeamCity
+    zone: zone://internal
+
+  splunk:
+    type: observability
+    description: Splunk Enterprise
+    provider: Splunk
+    zone: zone://internal
+
+  opsgenie:
+    type: on-call
+    description: OpsGenie
+    provider: Atlassian
+    zone: zone://external
+
+  octopus-deploy:
+    type: deployment
+    description: Octopus Deploy
+    provider: Octopus
+    zone: zone://internal

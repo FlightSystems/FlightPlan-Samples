@@ -1,0 +1,122 @@
+# ===================================================================
+# FLIGHT PLAN v1
+# Design-time architecture & compliance layer
+# ===================================================================
+
+application:
+  name: Shopping Sample App
+  description: Sample application demonstrating Flight Plan features
+
+# -------------------------------------------------------------------
+# SHARED REGISTRIES
+# Base and Organization-level definitions merged at runtime
+# -------------------------------------------------------------------
+uses:
+  - ../base/dataclasses.yaml
+  - ../base/platforms.yaml
+  - ../base/terms.yaml
+  - ../org-zones.yaml
+  - ../org-environments.yaml
+  - ../org-teams.yaml
+
+# -------------------------------------------------------------------
+# RESOURCES
+# Real infrastructure & external systems
+# dataClasses represent data at rest / in transit
+# -------------------------------------------------------------------
+resources:
+
+  users-db:
+    type: database
+    description: Primary user database
+    zone: zone://restricted
+    owner: team://backend
+    platform: cloud://aws/rds-postgresql
+    dataClasses:
+      - dataclass://personal_data
+      - dataclass://financial_data
+
+  user-events-queue:
+    type: queue
+    description: Queue for user-related events
+    zone: zone://internal
+    owner: team://backend
+    platform: cloud://aws/sqs
+    dataClasses:
+      - dataclass://personal_data
+
+  payment-gateway:
+    type: external-service
+    description: Third-party payment gateway
+    zone: zone://external
+    owner: team://backend
+    platform: saas://stripe/payments
+    dataClasses:
+      - dataclass://financial_data
+      - dataclass://payment_card_data
+
+# -------------------------------------------------------------------
+# SERVICES
+# Deployable units & data flows
+# dataClasses live on exports (data in motion)
+# -------------------------------------------------------------------
+services:
+
+  web-app:
+    description: Frontend web application
+    zone: zone://public
+    owner: team://frontend
+    platform: tech://vue/3
+    foreignRefs:
+      - octopus://projects/Projects-12
+    dependsOn:
+      - uri: svc://users/public-api
+      - uri: svc://orders/public-api
+
+  users:
+    description: User management service
+    zone: zone://internal
+    owner: team://api
+    platform: tech://dotnet
+    foreignRefs:
+      - octopus://projects/Projects-14
+    exports:
+      public-api:
+        protocol: https
+        auth: oauth2
+        visibility: external
+        dataClasses:
+          - dataclass://personal_data
+    dependsOn:
+      - uri: res://users-db
+        access: read-write
+
+  orders:
+    description: Order processing service
+    zone: zone://internal
+    owner: team://api
+    platform: tech://dotnet
+    foreignRefs:
+      - octopus://projects/Projects-18
+    exports:
+      public-api:
+        protocol: https
+        auth: oauth2
+        visibility: external
+    dependsOn:
+      - uri: svc://users/public-api
+      - uri: res://payment-gateway
+
+  user-events-worker:
+    description: Consumer for domain events
+    zone: zone://restricted
+    owner: team://backend
+    platform: tech://python
+    foreignRefs:
+      - octopus://projects/Projects-22
+    dependsOn:
+      - uri: res://user-events-queue
+        access: read
+      - uri: res://users-db
+        access: read
+      - uri: svc://users/public-api

@@ -1,0 +1,24 @@
+# -------------------------------------------------------------------
+# ENVIRONMENTS
+# Logical deployment targets (no runtime semantics)
+# -------------------------------------------------------------------
+environments:
+  dev:
+    description: Development environment
+    foreignRefs:
+      - octopus://environments/Environments-1
+      - k8s://clusters/flytdeck-dev/namespaces/flytdeck-dev
+    promotesTo: staging
+
+  staging:
+    description: Staging environment
+    promotesTo: prod
+    foreignRefs:
+      - octopus://environments/Environments-2
+      - k8s://clusters/flytdeck-staging/namespaces/flytdeck-staging
+
+  prod:
+    description: Production environment
+    foreignRefs:
+      - octopus://environments/Environments-3
+      - k8s://clusters/flytdeck-prod/namespaces/flytdeck-prod

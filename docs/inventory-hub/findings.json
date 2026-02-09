@@ -1,0 +1,90 @@
+[
+  {
+    "Id": "821bcc9972104a48b1f5dfa819c7a21a62f9c178f025ad2285bed167f5088a80",
+    "ReportId": "security-overview",
+    "SectionHeading": "Third-Party Dependencies",
+    "SectionAnchorId": "third-party-dependencies",
+    "Severity": "High",
+    "Title": "Classified data sent to third-party systems",
+    "Summary": "1 third-party resource(s) are marked as handling classified data. Validate vendor risk, DPAs, and data minimization.",
+    "Evidence": [
+      "identity-provider (classifications: authentication_data, identifiers)"
+    ]
+  },
+  {
+    "Id": "fe05dbfb99725b77e142c05a222382ea6b3a8e5a2f07520516edcbae4b9aba5d",
+    "ReportId": "architecture-overview",
+    "SectionHeading": "Service Overview",
+    "SectionAnchorId": "service-overview",
+    "Severity": "Medium",
+    "Title": "Services missing platform assignment",
+    "Summary": "1 service(s) do not declare a platform. This reduces clarity on runtime foundations and operational responsibilities.",
+    "Evidence": [
+      "inventory-legacy-sync"
+    ]
+  },
+  {
+    "Id": "70cfca8506c559f04c58a7fbc18b83ad978fe4b13d7c89b15f5e11d41e8c4ec9",
+    "ReportId": "security-overview",
+    "SectionHeading": "External Exposure",
+    "SectionAnchorId": "external-exposure",
+    "Severity": "Medium",
+    "Title": "Externally exposed interfaces",
+    "Summary": "2 export(s) are marked as externally exposed. Review authentication, authorization, and rate limiting.",
+    "Evidence": [
+      "catalog/public-api (visibility external, protocol https, auth oauth2)",
+      "inventory/public-api (visibility external, protocol https, auth oauth2)"
+    ]
+  },
+  {
+    "Id": "cd425fc62cca75adbb5bcc62a7b00449f3daa8bc6f2d7f155868ad18c81388b4",
+    "ReportId": "security-overview",
+    "SectionHeading": "Trust Boundary Analysis",
+    "SectionAnchorId": "trust-boundary-analysis",
+    "Severity": "Medium",
+    "Title": "Trust boundary crossings",
+    "Summary": "8 interaction(s) cross zone boundaries. Review identity propagation, encryption in transit, and authorization between zones.",
+    "Evidence": [
+      "internal \u2192 restricted: catalog \u2192 audit-log-bucket (service-to-resource)",
+      "internal \u2192 restricted: catalog \u2192 catalog-db (service-to-resource)",
+      "internal \u2192 restricted: inventory \u2192 audit-log-bucket (service-to-resource)",
+      "internal \u2192 restricted: inventory \u2192 inventory-db (service-to-resource)",
+      "public \u2192 external: admin-portal \u2192 identity-provider (service-to-resource)",
+      "public \u2192 internal: admin-portal \u2192 catalog (service-to-service)",
+      "public \u2192 internal: admin-portal \u2192 inventory (service-to-service)",
+      "restricted \u2192 internal: inventory-events-worker \u2192 inventory-events-topic (service-to-resource)"
+    ]
+  },
+  {
+    "Id": "7b2abd2cd82c3eedd761e48cd2ddb600fc30effdd43fff5b787238fb38117eb6",
+    "ReportId": "architecture-overview",
+    "SectionHeading": "Service Overview",
+    "SectionAnchorId": "service-overview",
+    "Severity": "Low",
+    "Title": "Services missing repo URL",
+    "Summary": "5 service(s) do not declare a repoUrl. Adding repo links improves traceability for ownership, releases, and incident response.",
+    "Evidence": [
+      "admin-portal",
+      "catalog",
+      "inventory",
+      "inventory-events-worker",
+      "inventory-legacy-sync"
+    ]
+  },
+  {
+    "Id": "7e894b1dd10374d93ae3f8fe58fa05c43cc4fb37c23788cbf4c7ace066d0055b",
+    "ReportId": "service-catalog",
+    "SectionHeading": "Service Catalog",
+    "SectionAnchorId": "service-catalog",
+    "Severity": "Low",
+    "Title": "Services missing repo URL",
+    "Summary": "5 service(s) do not declare a repoUrl.",
+    "Evidence": [
+      "admin-portal",
+      "catalog",
+      "inventory",
+      "inventory-events-worker",
+      "inventory-legacy-sync"
+    ]
+  }
+]

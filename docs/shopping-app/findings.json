@@ -1,0 +1,74 @@
+[
+  {
+    "Id": "821bcc9972104a48b1f5dfa819c7a21a62f9c178f025ad2285bed167f5088a80",
+    "ReportId": "security-overview",
+    "SectionHeading": "Third-Party Dependencies",
+    "SectionAnchorId": "third-party-dependencies",
+    "Severity": "High",
+    "Title": "Classified data sent to third-party systems",
+    "Summary": "1 third-party resource(s) are marked as handling classified data. Validate vendor risk, DPAs, and data minimization.",
+    "Evidence": [
+      "payment-gateway (classifications: financial_data, payment_card_data)"
+    ]
+  },
+  {
+    "Id": "70cfca8506c559f04c58a7fbc18b83ad978fe4b13d7c89b15f5e11d41e8c4ec9",
+    "ReportId": "security-overview",
+    "SectionHeading": "External Exposure",
+    "SectionAnchorId": "external-exposure",
+    "Severity": "Medium",
+    "Title": "Externally exposed interfaces",
+    "Summary": "2 export(s) are marked as externally exposed. Review authentication, authorization, and rate limiting.",
+    "Evidence": [
+      "orders/public-api (visibility external, protocol https, auth oauth2)",
+      "users/public-api (visibility external, protocol https, auth oauth2)"
+    ]
+  },
+  {
+    "Id": "c804b9794c567fb2760a8f66d4ad1616a9bff4ad5b54d02dbe6bc53c5ab511e2",
+    "ReportId": "security-overview",
+    "SectionHeading": "Trust Boundary Analysis",
+    "SectionAnchorId": "trust-boundary-analysis",
+    "Severity": "Medium",
+    "Title": "Trust boundary crossings",
+    "Summary": "6 interaction(s) cross zone boundaries. Review identity propagation, encryption in transit, and authorization between zones.",
+    "Evidence": [
+      "internal \u2192 external: orders \u2192 payment-gateway (service-to-resource)",
+      "internal \u2192 restricted: users \u2192 users-db (service-to-resource)",
+      "public \u2192 internal: web-app \u2192 orders (service-to-service)",
+      "public \u2192 internal: web-app \u2192 users (service-to-service)",
+      "restricted \u2192 internal: user-events-worker \u2192 user-events-queue (service-to-resource)",
+      "restricted \u2192 internal: user-events-worker \u2192 users (service-to-service)"
+    ]
+  },
+  {
+    "Id": "29949f3f911ebe95d593f0515b018ea48d010c54f4f23fa42abd8812f326531e",
+    "ReportId": "architecture-overview",
+    "SectionHeading": "Service Overview",
+    "SectionAnchorId": "service-overview",
+    "Severity": "Low",
+    "Title": "Services missing repo URL",
+    "Summary": "4 service(s) do not declare a repoUrl. Adding repo links improves traceability for ownership, releases, and incident response.",
+    "Evidence": [
+      "orders",
+      "user-events-worker",
+      "users",
+      "web-app"
+    ]
+  },
+  {
+    "Id": "d53f600622ed7c606f797b02e692d341dbbb954a98ea55f2d3364b3d9c86f1b6",
+    "ReportId": "service-catalog",
+    "SectionHeading": "Service Catalog",
+    "SectionAnchorId": "service-catalog",
+    "Severity": "Low",
+    "Title": "Services missing repo URL",
+    "Summary": "4 service(s) do not declare a repoUrl.",
+    "Evidence": [
+      "orders",
+      "user-events-worker",
+      "users",
+      "web-app"
+    ]
+  }
+]

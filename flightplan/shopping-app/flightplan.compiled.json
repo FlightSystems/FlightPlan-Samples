@@ -1,0 +1,350 @@
+{
+  "metadata": {
+    "format": "flightplan/v1",
+    "compiledAt": "2026-02-08T17:16:02.664617-05:00",
+    "sourceFiles": [
+      "flightplan.yml",
+      "../base-dataclasses.yaml",
+      "../base-platforms.yaml",
+      "../org-zones.yaml",
+      "../org-environments.yaml",
+      "../org-teams.yaml"
+    ]
+  },
+  "application": {
+    "name": "Shopping Sample App",
+    "description": "Sample application demonstrating Flight Plan features"
+  },
+  "entities": {
+    "environments": [
+      {
+        "promotesTo": [
+          "staging"
+        ],
+        "id": "dev",
+        "type": "environment",
+        "name": "dev",
+        "description": "Development environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-1",
+          "k8s://clusters/flytdeck-dev/namespaces/flytdeck-dev"
+        ]
+      },
+      {
+        "promotesTo": [
+          "prod"
+        ],
+        "id": "staging",
+        "type": "environment",
+        "name": "staging",
+        "description": "Staging environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-2",
+          "k8s://clusters/flytdeck-staging/namespaces/flytdeck-staging"
+        ]
+      },
+      {
+        "id": "prod",
+        "type": "environment",
+        "name": "prod",
+        "description": "Production environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-3",
+          "k8s://clusters/flytdeck-prod/namespaces/flytdeck-prod"
+        ]
+      }
+    ],
+    "zones": [
+      {
+        "risks": [],
+        "id": "public",
+        "type": "zone",
+        "name": "public",
+        "description": "Internet-facing systems"
+      },
+      {
+        "risks": [],
+        "id": "internal",
+        "type": "zone",
+        "name": "internal",
+        "description": "Internal trusted services"
+      },
+      {
+        "risks": [],
+        "id": "restricted",
+        "type": "zone",
+        "name": "restricted",
+        "description": "Sensitive data and systems"
+      },
+      {
+        "risks": [],
+        "id": "external",
+        "type": "zone",
+        "name": "external",
+        "description": "Third-party external services"
+      }
+    ],
+    "teams": [
+      {
+        "id": "frontend",
+        "type": "team",
+        "name": "frontend",
+        "description": "Frontend development team",
+        "annotations": {
+          "ownership": {
+            "onCall": "PagerDuty: Frontend"
+          }
+        }
+      },
+      {
+        "id": "backend",
+        "type": "team",
+        "name": "backend",
+        "description": "Backend services team",
+        "annotations": {
+          "ownership": {
+            "onCall": "PagerDuty: Backend"
+          }
+        }
+      },
+      {
+        "id": "api",
+        "type": "team",
+        "name": "api",
+        "description": "API development team"
+      }
+    ],
+    "platforms": [
+      {
+        "category": "cloud",
+        "id": "aws/rds-postgresql",
+        "type": "platform",
+        "name": "aws/rds-postgresql",
+        "description": "Amazon RDS for PostgreSQL"
+      },
+      {
+        "category": "cloud",
+        "id": "aws/sqs",
+        "type": "platform",
+        "name": "aws/sqs",
+        "description": "Amazon SQS"
+      },
+      {
+        "category": "tech",
+        "id": "dotnet/8",
+        "type": "platform",
+        "name": "dotnet/8",
+        "description": ".NET 8 Runtime"
+      },
+      {
+        "category": "tech",
+        "id": "python/3.12",
+        "type": "platform",
+        "name": "python/3.12",
+        "description": "Python 3.12"
+      },
+      {
+        "category": "tech",
+        "id": "vue/3",
+        "type": "platform",
+        "name": "vue/3",
+        "description": "Vue.js 3"
+      },
+      {
+        "category": "saas",
+        "id": "stripe/payments",
+        "type": "platform",
+        "name": "stripe/payments",
+        "description": "Stripe Payments"
+      }
+    ],
+    "dataClasses": [
+      {
+        "id": "personal_data",
+        "type": "dataClass",
+        "name": "personal_data",
+        "description": "Personally identifiable information (PII)"
+      },
+      {
+        "id": "financial_data",
+        "type": "dataClass",
+        "name": "financial_data",
+        "description": "Financial account or transaction information"
+      },
+      {
+        "id": "payment_card_data",
+        "type": "dataClass",
+        "name": "payment_card_data",
+        "description": "Payment card information (PCI regulated)"
+      }
+    ],
+    "resources": [
+      {
+        "kind": "database",
+        "zoneRef": "restricted",
+        "id": "users-db",
+        "type": "resource",
+        "name": "users-db",
+        "description": "Primary user database",
+        "ownerRef": "backend",
+        "platformRef": "aws/rds-postgresql",
+        "dataClassRefs": [
+          "personal_data",
+          "financial_data"
+        ]
+      },
+      {
+        "kind": "queue",
+        "zoneRef": "internal",
+        "id": "user-events-queue",
+        "type": "resource",
+        "name": "user-events-queue",
+        "description": "Queue for user-related events",
+        "ownerRef": "backend",
+        "platformRef": "aws/sqs",
+        "dataClassRefs": [
+          "personal_data"
+        ]
+      },
+      {
+        "kind": "external-service",
+        "zoneRef": "external",
+        "id": "payment-gateway",
+        "type": "resource",
+        "name": "payment-gateway",
+        "description": "Third-party payment gateway",
+        "ownerRef": "backend",
+        "platformRef": "stripe/payments",
+        "dataClassRefs": [
+          "financial_data",
+          "payment_card_data"
+        ]
+      }
+    ],
+    "services": [
+      {
+        "exportIds": [],
+        "zoneRef": "public",
+        "id": "web-app",
+        "type": "service",
+        "name": "web-app",
+        "description": "Frontend web application",
+        "ownerRef": "frontend",
+        "platformRef": "vue/3",
+        "foreignRefs": [
+          "octopus://projects/Projects-12"
+        ]
+      },
+      {
+        "exportIds": [
+          "users/public-api"
+        ],
+        "zoneRef": "internal",
+        "id": "users",
+        "type": "service",
+        "name": "users",
+        "description": "User management service",
+        "ownerRef": "api",
+        "platformRef": "dotnet/8",
+        "foreignRefs": [
+          "octopus://projects/Projects-14"
+        ]
+      },
+      {
+        "exportIds": [
+          "orders/public-api"
+        ],
+        "zoneRef": "internal",
+        "id": "orders",
+        "type": "service",
+        "name": "orders",
+        "description": "Order processing service",
+        "ownerRef": "api",
+        "platformRef": "dotnet/8",
+        "foreignRefs": [
+          "octopus://projects/Projects-18"
+        ]
+      },
+      {
+        "exportIds": [],
+        "zoneRef": "restricted",
+        "id": "user-events-worker",
+        "type": "service",
+        "name": "user-events-worker",
+        "description": "Consumer for domain events",
+        "ownerRef": "backend",
+        "platformRef": "python/3.12",
+        "foreignRefs": [
+          "octopus://projects/Projects-22"
+        ]
+      }
+    ],
+    "tooling": []
+  },
+  "interfaces": [
+    {
+      "id": "users/public-api",
+      "serviceRef": "users",
+      "name": "public-api",
+      "protocol": "https",
+      "auth": "oauth2",
+      "visibility": "external",
+      "dataClassRefs": [
+        "personal_data"
+      ]
+    },
+    {
+      "id": "orders/public-api",
+      "serviceRef": "orders",
+      "name": "public-api",
+      "protocol": "https",
+      "auth": "oauth2",
+      "visibility": "external"
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "web-app",
+      "to": "users/public-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "web-app",
+      "to": "orders/public-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "users",
+      "to": "users-db",
+      "kind": "service-to-resource",
+      "access": "read-write"
+    },
+    {
+      "from": "orders",
+      "to": "users/public-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "orders",
+      "to": "payment-gateway",
+      "kind": "service-to-resource"
+    },
+    {
+      "from": "user-events-worker",
+      "to": "user-events-queue",
+      "kind": "service-to-resource",
+      "access": "read"
+    },
+    {
+      "from": "user-events-worker",
+      "to": "users-db",
+      "kind": "service-to-resource",
+      "access": "read"
+    },
+    {
+      "from": "user-events-worker",
+      "to": "users/public-api",
+      "kind": "service-to-service"
+    }
+  ]
+}

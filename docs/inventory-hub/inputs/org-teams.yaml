@@ -1,0 +1,12 @@
+# -------------------------------------------------------------------
+# TEAMS (ownership & accountability)
+# -------------------------------------------------------------------
+teams:
+  frontend:
+    description: Frontend development team
+    onCall: "PagerDuty: Frontend"
+  backend:
+    description: Backend services team
+    onCall: "PagerDuty: Backend"
+  api:
+    description: API development team

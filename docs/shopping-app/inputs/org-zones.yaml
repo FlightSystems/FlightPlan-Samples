@@ -1,0 +1,16 @@
+# -------------------------------------------------------------------
+# ORGANIZATIONAL ZONES DEFINITION
+# ZONES (trust boundaries & risk posture)
+# -------------------------------------------------------------------
+zones:
+  public:
+    description: Internet-facing systems
+
+  internal:
+    description: Internal trusted services
+
+  restricted:
+    description: Sensitive data and systems
+
+  external:
+    description: Third-party external services

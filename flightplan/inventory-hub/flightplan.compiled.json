@@ -1,0 +1,468 @@
+{
+  "metadata": {
+    "format": "flightplan/v1",
+    "compiledAt": "2026-02-08T17:18:42.27573-05:00",
+    "sourceFiles": [
+      "flightplan.yml",
+      "../base-dataclasses.yaml",
+      "../base-platforms.yaml",
+      "../org-zones.yaml",
+      "../org-environments.yaml",
+      "../org-teams.yaml"
+    ]
+  },
+  "application": {
+    "name": "Inventory Hub",
+    "description": "Sample application focused on catalog \u002B inventory \u002B auditability"
+  },
+  "entities": {
+    "environments": [
+      {
+        "promotesTo": [
+          "staging"
+        ],
+        "id": "dev",
+        "type": "environment",
+        "name": "dev",
+        "description": "Development environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-1",
+          "k8s://clusters/flytdeck-dev/namespaces/flytdeck-dev"
+        ]
+      },
+      {
+        "promotesTo": [
+          "prod"
+        ],
+        "id": "staging",
+        "type": "environment",
+        "name": "staging",
+        "description": "Staging environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-2",
+          "k8s://clusters/flytdeck-staging/namespaces/flytdeck-staging"
+        ]
+      },
+      {
+        "id": "prod",
+        "type": "environment",
+        "name": "prod",
+        "description": "Production environment",
+        "foreignRefs": [
+          "octopus://environments/Environments-3",
+          "k8s://clusters/flytdeck-prod/namespaces/flytdeck-prod"
+        ]
+      }
+    ],
+    "zones": [
+      {
+        "risks": [],
+        "id": "public",
+        "type": "zone",
+        "name": "public",
+        "description": "Internet-facing systems"
+      },
+      {
+        "risks": [],
+        "id": "internal",
+        "type": "zone",
+        "name": "internal",
+        "description": "Internal trusted services"
+      },
+      {
+        "risks": [],
+        "id": "restricted",
+        "type": "zone",
+        "name": "restricted",
+        "description": "Sensitive data and systems"
+      },
+      {
+        "risks": [],
+        "id": "external",
+        "type": "zone",
+        "name": "external",
+        "description": "Third-party external services"
+      }
+    ],
+    "teams": [
+      {
+        "id": "frontend",
+        "type": "team",
+        "name": "frontend",
+        "description": "Frontend development team",
+        "annotations": {
+          "ownership": {
+            "onCall": "PagerDuty: Frontend"
+          }
+        }
+      },
+      {
+        "id": "backend",
+        "type": "team",
+        "name": "backend",
+        "description": "Backend services team",
+        "annotations": {
+          "ownership": {
+            "onCall": "PagerDuty: Backend"
+          }
+        }
+      },
+      {
+        "id": "api",
+        "type": "team",
+        "name": "api",
+        "description": "API development team"
+      }
+    ],
+    "platforms": [
+      {
+        "category": "cloud",
+        "id": "aws/rds-postgresql",
+        "type": "platform",
+        "name": "aws/rds-postgresql",
+        "description": "Amazon RDS for PostgreSQL"
+      },
+      {
+        "category": "cloud",
+        "id": "aws/s3",
+        "type": "platform",
+        "name": "aws/s3",
+        "description": "Amazon S3"
+      },
+      {
+        "category": "cloud",
+        "id": "aws/sns",
+        "type": "platform",
+        "name": "aws/sns",
+        "description": "Amazon SNS"
+      },
+      {
+        "category": "tech",
+        "id": "dotnet/8",
+        "type": "platform",
+        "name": "dotnet/8",
+        "description": ".NET 8 Runtime"
+      },
+      {
+        "category": "tech",
+        "id": "python/3.12",
+        "type": "platform",
+        "name": "python/3.12",
+        "description": "Python 3.12"
+      },
+      {
+        "category": "tech",
+        "id": "react/18",
+        "type": "platform",
+        "name": "react/18",
+        "description": "React 18"
+      },
+      {
+        "category": "saas",
+        "id": "auth0",
+        "type": "platform",
+        "name": "auth0",
+        "description": "Auth0 Identity Platform"
+      }
+    ],
+    "dataClasses": [
+      {
+        "id": "public",
+        "type": "dataClass",
+        "name": "public",
+        "description": "Publicly available, non-sensitive information"
+      },
+      {
+        "id": "identifiers",
+        "type": "dataClass",
+        "name": "identifiers",
+        "description": "Unique identifiers associated with individuals"
+      },
+      {
+        "id": "authentication_data",
+        "type": "dataClass",
+        "name": "authentication_data",
+        "description": "Authentication credentials (passwords, tokens, secrets)"
+      },
+      {
+        "id": "system_metadata",
+        "type": "dataClass",
+        "name": "system_metadata",
+        "description": "System-generated metadata and identifiers"
+      },
+      {
+        "id": "audit_logs",
+        "type": "dataClass",
+        "name": "audit_logs",
+        "description": "Security or compliance audit logs"
+      },
+      {
+        "id": "confidential_business_data",
+        "type": "dataClass",
+        "name": "confidential_business_data",
+        "description": "Confidential business or operational data"
+      }
+    ],
+    "resources": [
+      {
+        "kind": "database",
+        "zoneRef": "restricted",
+        "id": "catalog-db",
+        "type": "resource",
+        "name": "catalog-db",
+        "description": "Product catalog and merchandising data",
+        "ownerRef": "backend",
+        "platformRef": "aws/rds-postgresql",
+        "dataClassRefs": [
+          "confidential_business_data",
+          "audit_logs"
+        ]
+      },
+      {
+        "kind": "database",
+        "zoneRef": "restricted",
+        "id": "inventory-db",
+        "type": "resource",
+        "name": "inventory-db",
+        "description": "Inventory levels, reservations, and warehouse allocations",
+        "ownerRef": "backend",
+        "platformRef": "aws/rds-postgresql",
+        "dataClassRefs": [
+          "confidential_business_data",
+          "system_metadata"
+        ]
+      },
+      {
+        "kind": "topic",
+        "zoneRef": "internal",
+        "id": "inventory-events-topic",
+        "type": "resource",
+        "name": "inventory-events-topic",
+        "description": "Event fanout for inventory changes",
+        "ownerRef": "backend",
+        "platformRef": "aws/sns",
+        "dataClassRefs": [
+          "system_metadata"
+        ]
+      },
+      {
+        "kind": "object-storage",
+        "zoneRef": "restricted",
+        "id": "audit-log-bucket",
+        "type": "resource",
+        "name": "audit-log-bucket",
+        "description": "Immutable audit log archive for inventory operations",
+        "ownerRef": "backend",
+        "platformRef": "aws/s3",
+        "dataClassRefs": [
+          "audit_logs",
+          "system_metadata"
+        ]
+      },
+      {
+        "kind": "external-service",
+        "zoneRef": "external",
+        "id": "identity-provider",
+        "type": "resource",
+        "name": "identity-provider",
+        "description": "Third-party identity provider for workforce/admin access",
+        "ownerRef": "api",
+        "platformRef": "auth0",
+        "dataClassRefs": [
+          "authentication_data",
+          "identifiers"
+        ]
+      }
+    ],
+    "services": [
+      {
+        "exportIds": [],
+        "zoneRef": "public",
+        "id": "admin-portal",
+        "type": "service",
+        "name": "admin-portal",
+        "description": "Admin UI for catalog and inventory operations",
+        "ownerRef": "frontend",
+        "platformRef": "react/18",
+        "foreignRefs": [
+          "k8s://apps/v1/namespaces/flytdeck-dev/deployments/admin-portal",
+          "k8s://apps/v1/namespaces/flytdeck-staging/deployments/admin-portal",
+          "k8s://apps/v1/namespaces/flytdeck-prod/deployments/admin-portal"
+        ]
+      },
+      {
+        "exportIds": [
+          "catalog/public-api",
+          "catalog/internal-api"
+        ],
+        "zoneRef": "internal",
+        "id": "catalog",
+        "type": "service",
+        "name": "catalog",
+        "description": "Catalog and merchandising API",
+        "ownerRef": "api",
+        "platformRef": "dotnet/8",
+        "foreignRefs": [
+          "k8s://apps/v1/namespaces/flytdeck-dev/deployments/catalog-api",
+          "k8s://apps/v1/namespaces/flytdeck-staging/deployments/catalog-api",
+          "k8s://apps/v1/namespaces/flytdeck-prod/deployments/catalog-api"
+        ]
+      },
+      {
+        "exportIds": [
+          "inventory/public-api"
+        ],
+        "zoneRef": "internal",
+        "id": "inventory",
+        "type": "service",
+        "name": "inventory",
+        "description": "Inventory reservation and allocation API",
+        "ownerRef": "api",
+        "platformRef": "dotnet/8",
+        "foreignRefs": [
+          "k8s://apps/v1/namespaces/flytdeck-dev/deployments/inventory-api",
+          "k8s://apps/v1/namespaces/flytdeck-staging/deployments/inventory-api",
+          "k8s://apps/v1/namespaces/flytdeck-prod/deployments/inventory-api"
+        ]
+      },
+      {
+        "exportIds": [],
+        "zoneRef": "restricted",
+        "id": "inventory-events-worker",
+        "type": "service",
+        "name": "inventory-events-worker",
+        "description": "Consumes inventory events and materializes audit/analytics projections",
+        "ownerRef": "backend",
+        "platformRef": "python/3.12",
+        "foreignRefs": [
+          "k8s://apps/v1/namespaces/flytdeck-dev/deployments/inventory-events-worker",
+          "k8s://apps/v1/namespaces/flytdeck-staging/deployments/inventory-events-worker",
+          "k8s://apps/v1/namespaces/flytdeck-prod/deployments/inventory-events-worker"
+        ]
+      },
+      {
+        "exportIds": [],
+        "zoneRef": "internal",
+        "id": "inventory-legacy-sync",
+        "type": "service",
+        "name": "inventory-legacy-sync",
+        "description": "Legacy partner sync job (intentionally missing platform for demo findings)",
+        "ownerRef": "backend"
+      }
+    ],
+    "tooling": []
+  },
+  "interfaces": [
+    {
+      "id": "catalog/public-api",
+      "serviceRef": "catalog",
+      "name": "public-api",
+      "protocol": "https",
+      "auth": "oauth2",
+      "visibility": "external",
+      "dataClassRefs": [
+        "public",
+        "confidential_business_data"
+      ]
+    },
+    {
+      "id": "catalog/internal-api",
+      "serviceRef": "catalog",
+      "name": "internal-api",
+      "protocol": "https",
+      "auth": "oauth2",
+      "visibility": "internal",
+      "dataClassRefs": [
+        "confidential_business_data"
+      ]
+    },
+    {
+      "id": "inventory/public-api",
+      "serviceRef": "inventory",
+      "name": "public-api",
+      "protocol": "https",
+      "auth": "oauth2",
+      "visibility": "external",
+      "dataClassRefs": [
+        "confidential_business_data",
+        "system_metadata"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "admin-portal",
+      "to": "identity-provider",
+      "kind": "service-to-resource",
+      "access": "read"
+    },
+    {
+      "from": "admin-portal",
+      "to": "catalog/internal-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "admin-portal",
+      "to": "inventory/public-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "catalog",
+      "to": "catalog-db",
+      "kind": "service-to-resource",
+      "access": "read-write"
+    },
+    {
+      "from": "catalog",
+      "to": "audit-log-bucket",
+      "kind": "service-to-resource",
+      "access": "write"
+    },
+    {
+      "from": "inventory",
+      "to": "catalog/public-api",
+      "kind": "service-to-service"
+    },
+    {
+      "from": "inventory",
+      "to": "inventory-db",
+      "kind": "service-to-resource",
+      "access": "read-write"
+    },
+    {
+      "from": "inventory",
+      "to": "inventory-events-topic",
+      "kind": "service-to-resource",
+      "access": "write"
+    },
+    {
+      "from": "inventory",
+      "to": "audit-log-bucket",
+      "kind": "service-to-resource",
+      "access": "write"
+    },
+    {
+      "from": "inventory-events-worker",
+      "to": "inventory-events-topic",
+      "kind": "service-to-resource",
+      "access": "read"
+    },
+    {
+      "from": "inventory-events-worker",
+      "to": "audit-log-bucket",
+      "kind": "service-to-resource",
+      "access": "read-write"
+    },
+    {
+      "from": "inventory-events-worker",
+      "to": "inventory-db",
+      "kind": "service-to-resource",
+      "access": "read"
+    },
+    {
+      "from": "inventory-legacy-sync",
+      "to": "inventory/public-api",
+      "kind": "service-to-service"
+    }
+  ]
+}

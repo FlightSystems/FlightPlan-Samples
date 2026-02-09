@@ -1,0 +1,238 @@
+# ===================================================================
+# FLIGHT PLAN v1
+# Design-time architecture & compliance layer
+# ===================================================================
+
+application:
+  name: Inventory Hub
+  type: saas-platform
+  domain: Inventory management and auditability
+  description: Sample application focused on catalog + inventory + auditability
+
+deliveryModel:
+  hosting: public-cloud
+  serviceModel: SaaS
+  tenancy: multi-tenant
+
+toolchain:
+  repo: tooling://github-repos
+  work-tracking: tooling://jira
+  build: tooling://github-actions
+  deploy: tooling://octopus-deploy
+
+annotations:
+  ownership:
+    technicalOwner: "CTO (Platform Architecture)"
+    productOwner: "Product Manager"
+    supportModel: "L1: Support Desk, L2: Platform team, L3: Service owners"
+    escalation: "SEV1: page on-call; SEV2: create incident + notify team channel"
+  nonFunctional:
+    availability: "99.9%"
+    latencyP95: "250ms"
+    throughputRps: "200"
+    errorBudgetPolicy: "burn alerts @ 2x/5x"
+  reliability:
+    rto: "4h"
+    rpo: "15m"
+    backupStrategy: "nightly + PITR"
+    restoreTestCadence: "quarterly"
+    retryPolicy: "exponential backoff; max 3"
+    timeoutPolicy: "2s service-to-service; 10s external"
+    idempotency: "required for inventory changes"
+  observability:
+    logging: "structured JSON logs"
+    metrics: "RED + saturation"
+    tracing: "OpenTelemetry end-to-end"
+  security:
+    authModel: "Users are authenticated by MFA; gateway validates JWT"
+    authorizationModel: "RBAC + tenant-scoped claims"
+    auditLogging: "all claim access + admin actions"
+    encryptionAtRest: "AES-256 managed keys"
+    encryptionInTransit: "TLS 1.2+ everywhere"
+    #secretsManagement: "vault"
+  dataGovernance:
+    systemOfRecord: "claims-db"
+    retentionPolicy: "7 years"
+    deletionPolicy: "tenant offboarding workflow"
+    compliance: "HIPAA"
+  deployment:
+    topology: "microservices, event-driven, batch"
+    tlsTermination: "ingress controller"
+    rolloutStrategy: "rolling"
+    rollbackStrategy: "automated on SLO burn"
+    migrationStrategy: "prefer backward-compatible, alternate expand-contract"
+  apiGovernance:
+    versioningPolicy: "URI versioning; v1/v2"
+    deprecationPolicy: "90-day notice"
+    rateLimiting: "per-tenant quotas at gateway"
+    contractOwnership: "owning team per export"
+  tenancy:
+    isolationModel: "shared DB, tenant partition keys"
+    partitioningStrategy: "tenant_id"
+    tenantAwareAuthz: "required on every request"
+
+# -------------------------------------------------------------------
+# SHARED REGISTRIES
+# Base and Organization-level definitions merged at runtime
+# -------------------------------------------------------------------
+uses:
+  - ../base/dataclasses.yaml
+  - ../base/platforms.yaml
+  - ../base/terms.yaml
+  - ../org-zones.yaml
+  - ../org-environments.yaml
+  - ../org-teams.yaml
+  - ../org-tooling.yaml
+
+# -------------------------------------------------------------------
+# RESOURCES
+# -------------------------------------------------------------------
+resources:
+
+  catalog-db:
+    type: database
+    description: Product catalog and merchandising data
+    zone: zone://restricted
+    owner: team://backend
+    platform: cloud://aws/rds-postgresql
+    dataClasses:
+      - dataclass://confidential_business_data
+      - dataclass://audit_logs
+
+  inventory-db:
+    type: database
+    description: Inventory levels, reservations, and warehouse allocations
+    zone: zone://restricted
+    owner: team://backend
+    platform: cloud://aws/rds-postgresql
+    dataClasses:
+      - dataclass://confidential_business_data
+      - dataclass://system_metadata
+
+  inventory-events-topic:
+    type: topic
+    description: Event fanout for inventory changes
+    zone: zone://internal
+    owner: team://backend
+    platform: cloud://aws/sns
+    dataClasses:
+      - dataclass://system_metadata
+
+  audit-log-bucket:
+    type: object-storage
+    description: Immutable audit log archive for inventory operations
+    zone: zone://restricted
+    owner: team://backend
+    platform: cloud://aws/s3
+    dataClasses:
+      - dataclass://audit_logs
+      - dataclass://system_metadata
+
+  identity-provider:
+    type: external-service
+    description: Third-party identity provider for workforce/admin access
+    zone: zone://external
+    owner: team://api
+    platform: saas://auth0
+    dataClasses:
+      - dataclass://authentication_data
+      - dataclass://identifiers
+
+# -------------------------------------------------------------------
+# SERVICES
+# -------------------------------------------------------------------
+services:
+
+  admin-portal:
+    description: Admin UI for catalog and inventory operations
+    zone: zone://public
+    owner: team://frontend
+    platform: tech://react
+    foreignRefs:
+      - k8s://apps/v1/namespaces/flytdeck-dev/deployments/admin-portal
+      - k8s://apps/v1/namespaces/flytdeck-staging/deployments/admin-portal
+      - k8s://apps/v1/namespaces/flytdeck-prod/deployments/admin-portal
+    dependsOn:
+      - uri: res://identity-provider
+        access: read
+      - uri: svc://catalog/internal-api
+      - uri: svc://inventory/public-api
+
+  catalog:
+    description: Catalog and merchandising API
+    zone: zone://internal
+    owner: team://api
+    platform: tech://dotnet
+    foreignRefs:
+      - k8s://apps/v1/namespaces/flytdeck-dev/deployments/catalog-api
+      - k8s://apps/v1/namespaces/flytdeck-staging/deployments/catalog-api
+      - k8s://apps/v1/namespaces/flytdeck-prod/deployments/catalog-api
+    exports:
+      public-api:
+        protocol: https
+        auth: oauth2
+        visibility: external
+        dataClasses:
+          - dataclass://public
+          - dataclass://confidential_business_data
+      internal-api:
+        protocol: https
+        auth: oauth2
+        visibility: internal
+        dataClasses:
+          - dataclass://confidential_business_data
+    dependsOn:
+      - uri: res://catalog-db
+        access: read-write
+      - uri: res://audit-log-bucket
+        access: write
+
+  inventory:
+    description: Inventory reservation and allocation API
+    zone: zone://internal
+    owner: team://api
+    platform: tech://dotnet
+    foreignRefs:
+      - k8s://apps/v1/namespaces/flytdeck-dev/deployments/inventory-api
+      - k8s://apps/v1/namespaces/flytdeck-staging/deployments/inventory-api
+      - k8s://apps/v1/namespaces/flytdeck-prod/deployments/inventory-api
+    exports:
+      public-api:
+        protocol: https
+        auth: oauth2
+        visibility: external
+        dataClasses:
+          - dataclass://confidential_business_data
+          - dataclass://system_metadata
+    dependsOn:
+      - uri: svc://catalog/public-api
+      - uri: res://inventory-db
+        access: read-write
+      - uri: res://inventory-events-topic
+        access: write
+      - uri: res://audit-log-bucket
+        access: write
+
+  inventory-events-worker:
+    description: Consumes inventory events and materializes audit/analytics projections
+    zone: zone://restricted
+    owner: team://backend
+    platform: tech://python
+    foreignRefs:
+      - k8s://apps/v1/namespaces/flytdeck-dev/deployments/inventory-events-worker
+      - k8s://apps/v1/namespaces/flytdeck-staging/deployments/inventory-events-worker
+      - k8s://apps/v1/namespaces/flytdeck-prod/deployments/inventory-events-worker
+    dependsOn:
+      - uri: res://inventory-events-topic
+        access: read
+      - uri: res://audit-log-bucket
+        access: read-write
+      - uri: res://inventory-db
+        access: read
+
+  inventory-legacy-sync:
+    description: Legacy partner sync job (intentionally missing platform for demo findings)
+    zone: zone://internal
+    owner: team://backend
+    dependsOn:
+      - uri: svc://inventory/public-api
