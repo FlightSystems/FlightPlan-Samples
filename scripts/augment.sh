@@ -3,7 +3,8 @@
 # Augment the shopping-app and inventory-hub 
 # with AI-generated content
 # ----------------------------------------------
-FLIGHT_PLAN="dotnet run --project ../../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+#FLIGHT_PLAN="dotnet run --project ../../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+FLIGHT_PLAN="../../scripts/flightplan"
 
 cd ../flightplan/shopping-app
 $FLIGHT_PLAN build flightplan.yaml \

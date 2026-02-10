@@ -2,7 +2,8 @@
 # -----------------------
 # Build and publish
 # -----------------------
-FLIGHT_PLAN="dotnet run --project ../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+#FLIGHT_PLAN="dotnet run --project ../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+FLIGHT_PLAN="./flightplan"
 
 # Shopping App
 $FLIGHT_PLAN publish ../flightplan/shopping-app/flightplan.yaml \

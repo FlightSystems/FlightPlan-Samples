@@ -1,0 +1,42 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {},
+    ".NETCoreApp,Version=v10.0/win-x64": {
+      "FlightPlan.Core/1.0.0": {
+        "dependencies": {
+          "Markdig": "0.41.0"
+        },
+        "runtime": {
+          "FlightPlan.Core.dll": {}
+        }
+      },
+      "Markdig/0.41.0": {
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "assemblyVersion": "0.41.0.0",
+            "fileVersion": "0.41.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FlightPlan.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Markdig/0.41.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nEGSjfQ2i+MzJjvCZqoIBqW2x0iBALhhVogud48oPA/39a0n0jOhghdTYdm4xaDFBXmc4MxsVJAP5gtdvADvWQ==",
+      "path": "markdig/0.41.0",
+      "hashPath": "markdig.0.41.0.nupkg.sha512"
+    }
+  }
+}

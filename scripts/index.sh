@@ -2,7 +2,8 @@
 # ----------------------------------------------
 # Index with documentation and GitHub base URL
 # ----------------------------------------------
-FLIGHT_PLAN="dotnet run --project ../../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+#FLIGHT_PLAN="dotnet run --project ../../../FlightPlan/FlightPlan/FlightPlan.csproj --"
+FLIGHT_PLAN="../../scripts/flightplan"
 
 cd ../docs/shopping-app
 $FLIGHT_PLAN index flightplan.compiled.json \
